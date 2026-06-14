@@ -1,5 +1,5 @@
 /* 离线缓存：让清单和教程在超市没信号时也能打开 */
-const CACHE = 'cook-v1';
+const CACHE = 'cook-v2';
 const CORE = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const CORE = [
   './icon-512.png',
   './apple-touch-icon.png',
   './Food/practice_guide.md',
+  './Food/recipes.md',
   './Food/favorite.md'
 ];
 

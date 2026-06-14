@@ -160,6 +160,11 @@ nav button.active{color:var(--accent); font-weight:700}
     <div class="card md" id="guide-doc"><div class="loading">教程加载中…</div></div>
   </section>
 
+  <section id="page-recipe" class="page">
+    <div class="tip">🍳 做过的菜记在这，克重、配料、备注都全，下次照着复刻或改进。</div>
+    <div class="card md" id="recipe-doc"><div class="loading">菜谱加载中…</div></div>
+  </section>
+
   <section id="page-records" class="page">
     <a class="btn-big" id="btn-new-record" href="#" target="_blank" rel="noopener">📷 记录今天的成果</a>
     <div id="records-list"><div class="loading">加载记录中…</div></div>
@@ -173,6 +178,7 @@ nav button.active{color:var(--accent); font-weight:700}
 <nav>
   <button data-page="shop"><span class="ico">🛒</span>清单</button>
   <button data-page="guide"><span class="ico">📖</span>教程</button>
+  <button data-page="recipe"><span class="ico">🍳</span>菜谱</button>
   <button data-page="records"><span class="ico">📷</span>成果</button>
   <button data-page="fav"><span class="ico">⭐</span>收藏</button>
 </nav>
@@ -430,6 +436,13 @@ if (typeof document !== 'undefined') (function(){
     }catch(e){
       $('#guide-doc').innerHTML = '<div class="empty">教程加载失败，请检查网络后点右上角 ↻ 重试。</div>';
       $('#shop-card').innerHTML = '<div class="empty">清单加载失败，请检查网络后点右上角 ↻ 重试。</div>';
+    }
+    try{
+      const r = await fetch('Food/recipes.md');
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      $('#recipe-doc').innerHTML = mdToHtml(await r.text());
+    }catch(e){
+      $('#recipe-doc').innerHTML = '<div class="empty">菜谱加载失败，请检查网络后点右上角 ↻ 重试。</div>';
     }
     try{
       const r = await fetch('Food/favorite.md');
