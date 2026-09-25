@@ -74,6 +74,14 @@ main{max-width:640px; margin:0 auto; padding:14px 14px calc(86px + env(safe-area
   font-size:.82rem; padding:0 12px; border-radius:12px; cursor:pointer; font-family:inherit;
 }
 .count-line{font-size:.8rem; color:var(--muted); margin:0 2px 10px}
+.chips{display:flex; gap:6px; overflow-x:auto; padding:0 2px 9px; -webkit-overflow-scrolling:touch; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none; border:1.5px solid var(--line); background:var(--card); color:var(--muted);
+  font-size:.82rem; padding:5px 13px; border-radius:20px; cursor:pointer;
+  font-family:inherit; white-space:nowrap;
+}
+.chip.active{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
 .dish{padding:0; overflow:hidden}
 .dish>details>summary{
   cursor:pointer; list-style:none; padding:13px 16px;
@@ -85,6 +93,7 @@ main{max-width:640px; margin:0 auto; padding:14px 14px calc(86px + env(safe-area
 .dish>details[open]>summary{border-bottom:1px solid var(--line)}
 .dish-name{font-weight:700; font-size:1.02rem; flex:1; min-width:0}
 .dish-tag{flex:none; font-size:.72rem; color:var(--muted); background:var(--accent-soft); border-radius:20px; padding:2px 9px}
+.dish-cat{flex:none; font-size:.72rem; color:var(--muted); border:1px solid var(--line); border-radius:20px; padding:1px 9px; white-space:nowrap}
 .dish-inner{padding:2px 16px 14px}
 .gal{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:10px 0}
 .gal.two{grid-template-columns:repeat(2,1fr)}
@@ -178,6 +187,7 @@ nav button.active{color:var(--accent); font-weight:700}
       <input id="q" type="search" placeholder="搜菜名、食材、做法…" autocomplete="off">
       <button class="btn-toggle" id="btn-expand">全部展开</button>
     </div>
+    <div class="chips" id="chips"></div>
     <div class="count-line" id="count-line"></div>
     <div id="dish-list"><div class="loading">菜谱加载中…</div></div>
   </section>
@@ -364,9 +374,11 @@ if (typeof document !== 'undefined') (function(){
         `<div class="md">${mdToHtml(s.md)}</div></section>`;
     }).join('');
     const tag = d.images.length ? `${d.images.length} 张图` : '待配图';
+    const cat = d.category ? `<span class="dish-cat">${esc(d.category)}</span>` : '';
     return `<article class="card dish" data-idx="${idx}">` +
       `<details${allOpen ? ' open' : ''}><summary>` +
       `<span class="dish-name">${esc(d.title)}</span>` +
+      cat +
       `<span class="dish-tag">${tag}</span>` +
       `</summary><div class="dish-inner">${gal}${secs}</div></details></article>`;
   }
@@ -394,15 +406,40 @@ if (typeof document !== 'undefined') (function(){
     let shown = 0;
     cards.forEach(c => {
       const d = dishes[+c.dataset.idx];
-      const hay = (d.title + ' ' + d.sections.map(s => s.title + ' ' + s.md).join(' ')).toLowerCase();
-      const hit = !q || hay.includes(q);
+      const hay = (d.title + ' ' + (d.category || '') + ' ' +
+        d.sections.map(s => s.title + ' ' + s.md).join(' ')).toLowerCase();
+      const hit = (!q || hay.includes(q)) && (!activeCat || d.category === activeCat);
       c.style.display = hit ? '' : 'none';
       if(hit) shown++;
     });
-    $('#count-line').textContent = q
+    $('#count-line').textContent = (q || activeCat)
       ? `找到 ${shown} / ${dishes.length} 道菜`
       : `${dishes.length} 道菜 · ${totalImages} 张成果图`;
   }
+
+  /* ── 分类筛选 ── */
+  const CAT_ORDER = ['🥚 蛋类','🥩 肉类','🦐 虾 · 海鲜','🥬 素菜','🍲 炖 · 一锅','🍜 主食','🍰 甜点'];
+  let activeCat = '';
+
+  function renderChips(){
+    const box = $('#chips');
+    const cats = [...new Set(dishes.map(d => d.category).filter(Boolean))]
+      .sort((a, b) => {
+        const ia = CAT_ORDER.indexOf(a), ib = CAT_ORDER.indexOf(b);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      });
+    box.innerHTML = [`<button class="chip${activeCat === '' ? ' active' : ''}" data-cat="">全部</button>`]
+      .concat(cats.map(c => `<button class="chip${activeCat === c ? ' active' : ''}" data-cat="${esc(c)}">${esc(c)}</button>`))
+      .join('');
+    box.querySelectorAll('.chip').forEach(el => {
+      el.addEventListener('click', () => {
+        activeCat = el.dataset.cat || '';
+        renderChips();
+        applyFilter();
+      });
+    });
+  }
+
   $('#q').addEventListener('input', applyFilter);
 
   if(mqDesktop){
@@ -433,6 +470,7 @@ if (typeof document !== 'undefined') (function(){
       imageUsage = Array.isArray(d) ? {} : (d.imageUsage || {});
       totalImages = Array.isArray(d) ? 0 : (d.imageCount || 0);
       recipesLoaded = true;
+      renderChips();
       renderDishes();
     }catch(e){
       dishes = [];

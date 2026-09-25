@@ -74,6 +74,11 @@ function parse(md) {
       continue;
     }
     if (!cur) continue;                                    // 文件开头的说明，跳过
+
+    let mm2;
+    if ((mm2 = line.match(/^\*\*分类\*\*[：:]\s*(.+?)\s*$/))) { cur.category = mm2[1]; continue; }
+    if ((mm2 = line.match(/^\*\*最近练\*\*[：:]\s*(.+?)\s*$/))) { cur.lastPractice = mm2[1]; continue; }
+
     if (!sec) sec = { title: '', lines: [], images: [] };
 
     const sh = line.match(SHORTHAND_RE);                   // 简写写法（week1 05）
@@ -103,6 +108,14 @@ function parse(md) {
 
 const dishes = parse(fs.readFileSync(SRC, 'utf8'));
 
+/** week3 → 300；week5day1 → 501。数字越大越新 */
+function practiceRank(w) {
+  const m = String(w || '').match(/week\s*(\d+)(?:\s*day\s*(\d+))?/i);
+  return m ? Number(m[1]) * 100 + Number(m[2] || 0) : -1;
+}
+// 最新的排最前；同一批练习的保持文件里的先后
+dishes.sort((a, b) => practiceRank(b.lastPractice) - practiceRank(a.lastPractice));
+
 // 统计每张图被哪些菜用到（用于「这张图也被 XX 用了」）
 const imageUsage = {};
 for (const d of dishes) {
@@ -116,6 +129,8 @@ for (const d of dishes) {
 
 for (const d of dishes) {
   d.id = d.title;
+  d.category = d.category || '';
+  d.lastPractice = d.lastPractice || '';
   d.imageCount = d.images.length;
   d.cover = d.images.length ? d.images[0].src : null;
   d.sections = d.sections.filter(s => s.md.trim() || !/^图片$/.test(s.title));
@@ -133,6 +148,11 @@ fs.writeFileSync(OUT, JSON.stringify(payload, null, 2) + '\n', 'utf8');
 const shared = Object.entries(imageUsage).filter(([, v]) => v.length > 1);
 console.log(`✅ ${path.relative(ROOT, OUT)}`);
 console.log(`   ${payload.total} 道菜 / ${payload.imageCount} 张成果图`);
+const byCat = {};
+for (const d of dishes) byCat[d.category || '未分类'] = (byCat[d.category || '未分类'] || 0) + 1;
+console.log('   分类：' + Object.entries(byCat).map(([k, v]) => `${k} ${v}`).join(' · '));
+const noCat = dishes.filter(d => !d.lastPractice).length;
+if (noCat) console.log(`   ⚠ ${noCat} 道菜没写「**最近练**」，会排在最后`);
 const noImg = dishes.filter(d => !d.imageCount).length;
 if (noImg) console.log(`   ⚠ ${noImg} 道菜还没配图（在菜谱里加 ## 图片 小节即可）`);
 if (shared.length) {
