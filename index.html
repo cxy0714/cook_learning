@@ -277,10 +277,6 @@ if (typeof document !== 'undefined') (function(){
     set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
   };
 
-  /* ── 手机 / 电脑两套展示 ── */
-  const mqDesktop = (typeof matchMedia === 'function') ? matchMedia('(min-width: 900px)') : null;
-  const isDesktop = () => !!(mqDesktop && mqDesktop.matches);
-
   /* ── 底部导航 ── */
   let currentPage = store.get('cook.tab', 'recipes');
   function showPage(name){
@@ -442,16 +438,7 @@ if (typeof document !== 'undefined') (function(){
 
   $('#q').addEventListener('input', applyFilter);
 
-  if(mqDesktop){
-    const onBreakpoint = () => {
-      allOpen = mqDesktop.matches;
-      if(dishes.length) renderDishes();
-    };
-    if(mqDesktop.addEventListener) mqDesktop.addEventListener('change', onBreakpoint);
-    else if(mqDesktop.addListener) mqDesktop.addListener(onBreakpoint);
-  }
-
-  let allOpen = isDesktop();      // 电脑上默认全部展开
+  let allOpen = true;             // 手机、电脑都默认全部展开
   $('#btn-expand').addEventListener('click', () => {
     allOpen = !allOpen;
     document.querySelectorAll('#dish-list details').forEach(d => { d.open = allOpen; });
