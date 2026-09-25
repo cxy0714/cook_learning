@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>🍳 做饭练习</title>
+<title>🍳 我的菜谱</title>
 <meta name="theme-color" content="#e0532f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="做饭">
+<meta name="apple-mobile-web-app-title" content="菜谱">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -15,13 +15,15 @@
 :root{
   --bg:#faf6f1; --card:#ffffff; --ink:#2b2620; --muted:#8d8278;
   --accent:#e0532f; --accent-soft:#fdeae3; --line:#ece2d6;
-  --good:#3a9d5d; --note-bg:#fbf3e4; --shadow:0 1px 4px rgba(60,40,20,.07);
+  --good:#3a9d5d; --note-bg:#fbf3e4; --mine-bg:#f2f7f0; --mine-line:#cfe3c6;
+  --shadow:0 1px 4px rgba(60,40,20,.07);
 }
 @media (prefers-color-scheme: dark){
   :root{
     --bg:#1c1916; --card:#272220; --ink:#f0e9e1; --muted:#9a8f84;
     --accent:#ff7a52; --accent-soft:#3a2620; --line:#3a342e;
-    --good:#5cbb7e; --note-bg:#322a1e; --shadow:0 1px 4px rgba(0,0,0,.3);
+    --good:#5cbb7e; --note-bg:#322a1e; --mine-bg:#232b22; --mine-line:#3a4a36;
+    --shadow:0 1px 4px rgba(0,0,0,.3);
   }
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
@@ -38,165 +40,182 @@ header{
   border-bottom:1px solid var(--line);
 }
 header h1{font-size:1.15rem; margin:0; font-weight:700}
-#btn-refresh{
-  border:none; background:none; font-size:1.3rem; color:var(--muted);
-  padding:6px 10px; border-radius:10px; cursor:pointer;
-}
-main{
-  max-width:640px; margin:0 auto;
-  padding:14px 14px calc(86px + env(safe-area-inset-bottom));
-}
+#btn-refresh{border:none; background:none; font-size:1.3rem; color:var(--muted); padding:6px 10px; border-radius:10px; cursor:pointer}
+main{max-width:640px; margin:0 auto; padding:14px 14px calc(86px + env(safe-area-inset-bottom))}
 .page{display:none}
 .page.active{display:block}
-.card{
-  background:var(--card); border-radius:16px; padding:14px 16px;
-  margin-bottom:14px; box-shadow:var(--shadow);
-}
-.tip{
-  background:var(--accent-soft); border-radius:14px; padding:10px 14px;
-  font-size:.9rem; color:var(--ink); margin-bottom:14px;
-}
-/* ── 清单页 ── */
-.week-pills{display:flex; gap:8px; margin-bottom:12px}
-.week-pills button{
-  flex:1; padding:10px 0; border-radius:14px; border:1.5px solid var(--line);
-  background:var(--card); color:var(--ink); font-size:1rem; font-weight:600; cursor:pointer;
-}
-.week-pills button.active{
-  background:var(--accent); border-color:var(--accent); color:#fff;
-}
-.shop-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:4px}
-.shop-title{font-weight:700; font-size:1.05rem}
-.shop-progress{font-size:.85rem; color:var(--muted); white-space:nowrap}
-.shop-dishes{font-size:.85rem; color:var(--muted); margin-bottom:10px}
-.shop-item{
-  display:flex; align-items:center; gap:12px; min-height:52px;
-  padding:6px 2px; border-bottom:1px solid var(--line); cursor:pointer;
-  user-select:none; -webkit-user-select:none;
-}
-.shop-item:last-of-type{border-bottom:none}
-.shop-item .box{
-  width:26px; height:26px; flex:none; border-radius:50%;
-  border:2px solid var(--muted); display:flex; align-items:center; justify-content:center;
-  font-size:15px; color:#fff; transition:all .15s;
-}
-.shop-item.checked .box{background:var(--good); border-color:var(--good)}
-.shop-item .label{font-size:1.02rem}
-.shop-item.checked .label{color:var(--muted); text-decoration:line-through}
-.shop-note{
-  display:flex; gap:8px; background:var(--note-bg); border-radius:10px;
-  padding:8px 12px; margin:10px 0 2px; font-size:.88rem; color:var(--muted);
-}
-.shop-actions{display:flex; gap:10px; margin-top:12px}
-.btn-sub{
-  flex:1; padding:11px 0; border-radius:12px; border:1.5px solid var(--line);
-  background:none; color:var(--muted); font-size:.92rem; cursor:pointer;
-}
-.btn-sub.primary{border-color:var(--accent); color:var(--accent); font-weight:600}
+.card{background:var(--card); border-radius:16px; padding:14px 16px; margin-bottom:14px; box-shadow:var(--shadow)}
+.empty{color:var(--muted); font-size:.92rem; text-align:center; padding:10px 0}
+.loading{text-align:center; color:var(--muted); padding:24px 0}
 /* ── 文档渲染 ── */
 .md h1{font-size:1.3rem; line-height:1.4; margin:.4em 0 .6em}
-.md h2{
-  font-size:1.12rem; margin:1.4em 0 .5em; padding-left:10px;
-  border-left:4px solid var(--accent); line-height:1.45;
-}
+.md h2{font-size:1.12rem; margin:1.4em 0 .5em; padding-left:10px; border-left:4px solid var(--accent); line-height:1.45}
 .md h3{font-size:1.02rem; margin:1.2em 0 .4em; color:var(--accent)}
 .md p{margin:.5em 0}
 .md ol,.md ul{padding-left:1.3em; margin:.5em 0}
 .md li{margin:.35em 0}
-.md blockquote{
-  margin:.8em 0; padding:10px 14px; background:var(--accent-soft);
-  border-radius:12px; font-size:.93rem;
-}
+.md blockquote{margin:.8em 0; padding:10px 14px; background:var(--accent-soft); border-radius:12px; font-size:.93rem}
 .md blockquote p{margin:.3em 0}
 .md hr{border:none; border-top:1px dashed var(--line); margin:1.4em 0}
 .md img{max-width:100%; border-radius:12px; display:block; margin:8px 0}
 .md a{color:var(--accent)}
-.md p.shopline{
-  background:var(--note-bg); border-radius:10px; padding:8px 12px; font-size:.93rem;
+.md strong{color:var(--ink)}
+/* ── 菜谱页 ── */
+.toolbar{display:flex; gap:8px; margin-bottom:12px}
+#q{
+  flex:1; min-width:0; font-size:1rem; padding:10px 14px; border-radius:12px;
+  border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+  font-family:inherit;
 }
-/* ── 成果页 ── */
-.btn-big{
-  display:block; width:100%; padding:14px 0; border-radius:14px; border:none;
-  background:var(--accent); color:#fff; font-size:1.05rem; font-weight:700;
-  text-align:center; text-decoration:none; margin-bottom:14px; cursor:pointer;
+#q:focus{outline:none; border-color:var(--accent)}
+#q::placeholder{color:var(--muted)}
+.btn-toggle{
+  flex:none; border:1.5px solid var(--line); background:var(--card); color:var(--muted);
+  font-size:.82rem; padding:0 12px; border-radius:12px; cursor:pointer; font-family:inherit;
 }
-.record-meta{font-size:.82rem; color:var(--muted); margin-bottom:4px}
-.record-title{font-weight:700; font-size:1.05rem; margin-bottom:6px}
-.record-body{font-size:.95rem}
-.record-link{font-size:.82rem}
-.empty{color:var(--muted); font-size:.92rem; text-align:center; padding:10px 0}
-ol.howto{padding-left:1.4em; margin:.4em 0; font-size:.95rem}
-ol.howto li{margin:.5em 0}
+.count-line{font-size:.8rem; color:var(--muted); margin:0 2px 10px}
+.dish{padding:0; overflow:hidden}
+.dish>details>summary{
+  cursor:pointer; list-style:none; padding:13px 16px;
+  display:flex; align-items:center; gap:8px;
+}
+.dish>details>summary::-webkit-details-marker{display:none}
+.dish>details>summary::after{content:'▾'; color:var(--muted); font-size:.85rem; margin-left:auto}
+.dish>details[open]>summary::after{content:'▴'}
+.dish>details[open]>summary{border-bottom:1px solid var(--line)}
+.dish-name{font-weight:700; font-size:1.02rem; flex:1; min-width:0}
+.dish-tag{flex:none; font-size:.72rem; color:var(--muted); background:var(--accent-soft); border-radius:20px; padding:2px 9px}
+.dish-inner{padding:2px 16px 14px}
+.gal{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:10px 0}
+.gal.two{grid-template-columns:repeat(2,1fr)}
+.gal.one{grid-template-columns:1fr}
+.shot{
+  padding:0; border:none; background:var(--line); border-radius:10px; overflow:hidden;
+  aspect-ratio:1; cursor:zoom-in; display:block; line-height:0; width:100%;
+}
+.shot{position:relative}
+.shot img{width:100%; height:100%; object-fit:cover; display:block}
+.shot .badge{
+  position:absolute; right:4px; top:4px; font-size:.6rem; line-height:1.6;
+  background:rgba(0,0,0,.55); color:#fff; border-radius:6px; padding:0 5px;
+}
+.gal.one .shot{aspect-ratio:auto; background:none; border-radius:12px}
+.gal.one .shot img{height:auto; max-height:70vh; object-fit:contain}
+.noimg{
+  margin:8px 0 4px; padding:9px 12px; border:1px dashed var(--line); border-radius:10px;
+  font-size:.8rem; color:var(--muted); text-align:center;
+}
+.sec{margin-top:14px}
+.sec>h4{
+  font-size:.82rem; font-weight:700; color:var(--muted); margin:0 0 4px;
+  letter-spacing:.04em;
+}
+.sec .md{font-size:.94rem}
+.sec .md p:first-child{margin-top:.2em}
+.sec.mine{background:var(--mine-bg); border:1px solid var(--mine-line); border-radius:12px; padding:10px 12px 12px}
+.sec.mine>h4{color:var(--good)}
+/* ── 大图查看 ── */
+.lb{position:fixed; inset:0; z-index:100; background:rgba(12,10,8,.94); display:flex; align-items:center; justify-content:center; -webkit-user-select:none; user-select:none}
+.lb[hidden]{display:none}
+.lb img{max-width:100%; max-height:100%; object-fit:contain}
+.lb-bar{position:absolute; top:0; left:0; right:0; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:calc(10px + env(safe-area-inset-top)) 14px 10px; color:#fff; font-size:.85rem; pointer-events:none}
+.lb-bar button{pointer-events:auto}
+.lb-info{display:flex; flex-direction:column; gap:2px; min-width:0; padding-right:12px}
+#lb-cap{font-size:.78rem; opacity:.85; line-height:1.45}
+.lb-close,.lb-nav{border:none; background:rgba(255,255,255,.16); color:#fff; cursor:pointer; border-radius:50%; width:38px; height:38px; line-height:1; display:flex; align-items:center; justify-content:center}
+.lb-close{font-size:1.05rem}
+.lb-nav{position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; font-size:1.7rem}
+.lb-prev{left:8px}
+.lb-next{right:8px}
+.lb-nav[hidden]{display:none}
 /* ── 底部导航 ── */
-nav{
-  position:fixed; bottom:0; left:0; right:0; z-index:10;
-  display:flex; background:var(--card); border-top:1px solid var(--line);
-  padding-bottom:env(safe-area-inset-bottom);
-}
-nav button{
-  flex:1; border:none; background:none; padding:8px 0 6px; cursor:pointer;
-  display:flex; flex-direction:column; align-items:center; gap:1px;
-  font-size:.72rem; color:var(--muted);
-}
-nav button .ico{font-size:1.45rem; line-height:1.2}
+nav{position:fixed; bottom:0; left:0; right:0; z-index:10; display:flex; background:var(--card); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom)}
+nav button,nav a{flex:1; border:none; background:none; padding:8px 0 6px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:1px; font-size:.72rem; color:var(--muted); text-decoration:none}
+nav button .ico,nav a .ico{font-size:1.45rem; line-height:1.2}
 nav button.active{color:var(--accent); font-weight:700}
-.loading{text-align:center; color:var(--muted); padding:24px 0}
+
+/* ══ 电脑版：顶部标签 + 卡片网格 + 默认展开 ══ */
+@media (min-width:900px){
+  header{gap:10px; justify-content:flex-start; padding:12px 24px}
+  header h1{font-size:1.22rem}
+  nav{
+    margin-left:auto; position:static; flex:none; gap:6px;
+    background:none; border:none; padding:0;
+  }
+  nav button,nav a{
+    flex:none; flex-direction:row; align-items:center; gap:6px;
+    font-size:.94rem; padding:7px 14px; border-radius:10px; color:var(--muted);
+  }
+  nav button .ico,nav a .ico{font-size:1.05rem}
+  nav button.active{background:var(--accent-soft)}
+  main{max-width:1180px; padding:20px 24px 40px}
+  #dish-list{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:start}
+  #dish-list .card{margin-bottom:0}
+  .dish>details>summary{padding:14px 18px}
+  .dish-inner{padding:2px 18px 16px}
+  #ing-doc{max-width:880px; margin-left:auto; margin-right:auto}
+  .lb-nav{width:52px; height:52px; font-size:1.9rem}
+}
+@media (min-width:1500px){
+  #dish-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 </style>
 </head>
 <body>
 <header>
-  <h1>🍳 做饭练习</h1>
+  <h1>🍳 我的菜谱</h1>
+  <nav>
+    <button data-page="recipes"><span class="ico">🍳</span>菜谱</button>
+    <button data-page="ingredients"><span class="ico">🧺</span>食材</button>
+    <a href="https://cxy0714.github.io/" target="_blank" rel="noopener"><span class="ico">🏠</span>我的主页</a>
+  </nav>
   <button id="btn-refresh" title="刷新内容" aria-label="刷新">↻</button>
 </header>
 
 <main>
-  <section id="page-shop" class="page">
-    <div class="tip">🛒 去超市前打开这页，买一样勾一样。<b>勾选自动保存在手机上，没信号也能看。</b></div>
-    <div class="week-pills" id="week-pills"></div>
-    <div class="card" id="shop-card"><div class="loading">清单加载中…</div></div>
+  <section id="page-recipes" class="page">
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="搜菜名、食材、做法…" autocomplete="off">
+      <button class="btn-toggle" id="btn-expand">全部展开</button>
+    </div>
+    <div class="count-line" id="count-line"></div>
+    <div id="dish-list"><div class="loading">菜谱加载中…</div></div>
   </section>
 
-  <section id="page-guide" class="page">
-    <div class="card md" id="guide-doc"><div class="loading">教程加载中…</div></div>
-  </section>
-
-  <section id="page-records" class="page">
-    <a class="btn-big" id="btn-new-record" href="#" target="_blank" rel="noopener">📷 记录今天的成果</a>
-    <div id="records-list"><div class="loading">加载记录中…</div></div>
-  </section>
-
-  <section id="page-fav" class="page">
-    <div class="card md" id="fav-doc"><div class="loading">加载中…</div></div>
+  <section id="page-ingredients" class="page">
+    <div class="card md" id="ing-doc"><div class="loading">加载中…</div></div>
   </section>
 </main>
 
-<nav>
-  <button data-page="shop"><span class="ico">🛒</span>清单</button>
-  <button data-page="guide"><span class="ico">📖</span>教程</button>
-  <button data-page="records"><span class="ico">📷</span>成果</button>
-  <button data-page="fav"><span class="ico">⭐</span>收藏</button>
-</nav>
+<div class="lb" id="lightbox" hidden>
+  <div class="lb-bar">
+    <div class="lb-info">
+      <span id="lb-count"></span>
+      <span id="lb-cap"></span>
+    </div>
+    <button class="lb-close" id="lb-close" aria-label="关闭">✕</button>
+  </div>
+  <button class="lb-nav lb-prev" id="lb-prev" aria-label="上一张">‹</button>
+  <img id="lb-img" alt="">
+  <button class="lb-nav lb-next" id="lb-next" aria-label="下一张">›</button>
+</div>
 
 <script>
 /*__LOGIC__*/
-const REPO = 'cxy0714/cook_learning';
+const esc = s => String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-function esc(s){
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
 function inline(s){
   s = esc(s);
-  s = s.replace(/!\[([^\]]*)\]\((https?:[^)\s]+)\)/g,
-    '<img src="$2" alt="$1" loading="lazy">');
-  s = s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,
-    '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
   return s;
 }
 const SPECIAL = /^(#{1,6}\s|>|-{3,}\s*$|\d+[.、]\s|[-*]\s)/;
 function mdToHtml(md){
-  const lines = md.replace(/\r/g,'').split('\n');
+  const lines = String(md).replace(/\r/g,'').split('\n');
   const out = [];
   let i = 0;
   while(i < lines.length){
@@ -211,28 +230,19 @@ function mdToHtml(md){
     if(/^-{3,}\s*$/.test(line)){ out.push('<hr>'); i++; continue; }
     if(/^>/.test(line)){
       const buf = [];
-      while(i < lines.length && /^>/.test(lines[i])){
-        buf.push(lines[i].replace(/^> ?/,''));
-        i++;
-      }
+      while(i < lines.length && /^>/.test(lines[i])){ buf.push(lines[i].replace(/^> ?/,'')); i++; }
       out.push('<blockquote>'+mdToHtml(buf.join('\n'))+'</blockquote>');
       continue;
     }
     if(/^\d+[.、]\s/.test(line)){
       const buf = [];
-      while(i < lines.length && /^\d+[.、]\s/.test(lines[i])){
-        buf.push(lines[i].replace(/^\d+[.、]\s+/,''));
-        i++;
-      }
+      while(i < lines.length && /^\d+[.、]\s/.test(lines[i])){ buf.push(lines[i].replace(/^\d+[.、]\s+/,'')); i++; }
       out.push('<ol>'+buf.map(x=>'<li>'+inline(x)+'</li>').join('')+'</ol>');
       continue;
     }
     if(/^[-*]\s/.test(line)){
       const buf = [];
-      while(i < lines.length && /^[-*]\s/.test(lines[i])){
-        buf.push(lines[i].replace(/^[-*]\s+/,''));
-        i++;
-      }
+      while(i < lines.length && /^[-*]\s/.test(lines[i])){ buf.push(lines[i].replace(/^[-*]\s+/,'')); i++; }
       out.push('<ul>'+buf.map(x=>'<li>'+inline(x)+'</li>').join('')+'</ul>');
       continue;
     }
@@ -246,36 +256,7 @@ function mdToHtml(md){
     }
     out.push('<p>'+buf.join('<br>')+'</p>');
   }
-  return out.join('\n')
-    .replaceAll('<p><strong>采购</strong>','<p class="shopline"><strong>🛒 采购</strong>');
-}
-function splitItems(raw){
-  const items = [];
-  let cur = '', depth = 0;
-  for(const ch of raw){
-    if(ch === '（' || ch === '(') depth++;
-    if(ch === '）' || ch === ')') depth = Math.max(0, depth - 1);
-    if(ch === '、' && depth === 0){
-      if(cur.trim()) items.push(cur.trim());
-      cur = '';
-    } else cur += ch;
-  }
-  if(cur.trim()) items.push(cur.trim());
-  return items.map(t=>{
-    const note = /^[（(]/.test(t) && /[）)]$/.test(t);
-    return { text: note ? t.replace(/^[（(]/,'').replace(/[）)]$/,'') : t, note };
-  });
-}
-function extractShopping(md){
-  const sections = [];
-  let current = '';
-  for(const line of md.replace(/\r/g,'').split('\n')){
-    let m;
-    if((m = line.match(/^##\s+(.+?)\s*$/))) current = m[1];
-    else if((m = line.match(/^\*\*采购\*\*[：:]\s*(.+)$/)))
-      sections.push({ title: current, items: splitItems(m[1]) });
-  }
-  return sections;
+  return out.join('\n');
 }
 /*__END_LOGIC__*/
 
@@ -286,165 +267,199 @@ if (typeof document !== 'undefined') (function(){
     set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
   };
 
+  /* ── 手机 / 电脑两套展示 ── */
+  const mqDesktop = (typeof matchMedia === 'function') ? matchMedia('(min-width: 900px)') : null;
+  const isDesktop = () => !!(mqDesktop && mqDesktop.matches);
+
   /* ── 底部导航 ── */
-  let currentPage = store.get('cook.tab', 'shop');
+  let currentPage = store.get('cook.tab', 'recipes');
   function showPage(name){
     currentPage = name;
     store.set('cook.tab', name);
     document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id === 'page-'+name));
     document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active', b.dataset.page === name));
-    if(name === 'records') loadRecords();
+    if(name === 'recipes') loadRecipes();
+    if(name === 'ingredients') loadIngredients();
   }
   document.querySelectorAll('nav button').forEach(b=>{
     b.addEventListener('click', ()=>showPage(b.dataset.page));
   });
 
-  /* ── 清单 ── */
-  let shopSections = [];
-  let curWeek = store.get('cook.week', 0);
-  const checks = store.get('cook.checks', {});
+  /* ── 大图查看 ── */
+  const lb = $('#lightbox');
+  let lbItems = [], lbIndex = 0, lbTitle = '';
 
-  function weekLabel(title){
-    const m = title.match(/第\s*(\d+)\s*周/);
-    return m ? '第'+m[1]+'周' : title.slice(0, 4);
+  function paintLightbox(){
+    const it = lbItems[lbIndex] || {};
+    const img = $('#lb-img');
+    img.src = it.src;
+    img.alt = it.alt || '';
+    $('#lb-count').textContent = `${lbIndex+1} / ${lbItems.length}`;
+    const others = (imageUsage[it.src] || []).filter(t => t !== lbTitle);
+    let cap = it.alt || '';
+    if(others.length) cap += (cap ? '　' : '') + `🔁 也用于：${others.join('、')}`;
+    $('#lb-cap').textContent = cap;
+    const single = lbItems.length < 2;
+    $('#lb-prev').hidden = single;
+    $('#lb-next').hidden = single;
   }
-  function renderPills(){
-    const el = $('#week-pills');
-    el.innerHTML = '';
-    shopSections.forEach((s, idx)=>{
-      const b = document.createElement('button');
-      b.textContent = weekLabel(s.title);
-      b.classList.toggle('active', idx === curWeek);
-      b.addEventListener('click', ()=>{ curWeek = idx; store.set('cook.week', idx); renderPills(); renderShop(); });
-      el.appendChild(b);
-    });
+  function openLightbox(items, i, title){
+    lbItems = items; lbIndex = i; lbTitle = title || '';
+    lb.hidden = false;
+    document.body.style.overflow = 'hidden';
+    paintLightbox();
   }
-  function renderShop(){
-    const card = $('#shop-card');
-    if(!shopSections.length){
-      card.innerHTML = '<div class="empty">教程里没找到「<b>**采购**：</b>」格式的清单行。</div>';
+  function closeLightbox(){
+    lb.hidden = true;
+    document.body.style.overflow = '';
+    $('#lb-img').removeAttribute('src');
+  }
+  function stepLightbox(d){
+    if(lbItems.length < 2) return;
+    lbIndex = (lbIndex + d + lbItems.length) % lbItems.length;
+    paintLightbox();
+  }
+  $('#lb-close').addEventListener('click', closeLightbox);
+  $('#lb-prev').addEventListener('click', e => { e.stopPropagation(); stepLightbox(-1); });
+  $('#lb-next').addEventListener('click', e => { e.stopPropagation(); stepLightbox(1); });
+  lb.addEventListener('click', e => { if(e.target === lb) closeLightbox(); });
+  addEventListener('keydown', e => {
+    if(lb.hidden) return;
+    if(e.key === 'Escape') closeLightbox();
+    else if(e.key === 'ArrowLeft') stepLightbox(-1);
+    else if(e.key === 'ArrowRight') stepLightbox(1);
+  });
+  let lbTouchX = null;
+  lb.addEventListener('touchstart', e => { lbTouchX = e.changedTouches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    if(lbTouchX === null) return;
+    const dx = e.changedTouches[0].clientX - lbTouchX;
+    lbTouchX = null;
+    if(Math.abs(dx) > 45) stepLightbox(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  /* ── 菜谱页 ── */
+  let dishes = [];
+  let imageUsage = {};
+  let totalImages = 0;
+  let recipesLoaded = false;
+
+  function dishCard(d, idx){
+    const gal = d.images.length
+      ? `<div class="gal${d.images.length === 1 ? ' one' : (d.images.length === 2 ? ' two' : '')}">` +
+        d.images.map((im, i) => {
+          const shared = (imageUsage[im.src] || []).length > 1;
+          return `<button class="shot" data-dish="${idx}" data-i="${i}"` +
+            ` title="${esc(im.alt)}" aria-label="查看 ${esc(d.title)} 第 ${i+1} 张">` +
+            `<img src="${esc(im.src)}" alt="${esc(im.alt || d.title + ' 第 ' + (i+1) + ' 张')}" loading="lazy">` +
+            (shared ? '<span class="badge">🔁</span>' : '') +
+            `</button>`;
+        }).join('') +
+        `</div>`
+      : '';
+    const secs = d.sections.map(s => {
+      const mine = /我的做法/.test(s.title);
+      return `<section class="sec${mine ? ' mine' : ''}">` +
+        `<h4>${mine ? '✍️ ' : ''}${esc(s.title)}</h4>` +
+        `<div class="md">${mdToHtml(s.md)}</div></section>`;
+    }).join('');
+    const tag = d.images.length ? `${d.images.length} 张图` : '待配图';
+    return `<article class="card dish" data-idx="${idx}">` +
+      `<details${allOpen ? ' open' : ''}><summary>` +
+      `<span class="dish-name">${esc(d.title)}</span>` +
+      `<span class="dish-tag">${tag}</span>` +
+      `</summary><div class="dish-inner">${gal}${secs}</div></details></article>`;
+  }
+
+  function renderDishes(){
+    const list = $('#dish-list');
+    if(!dishes.length){
+      list.innerHTML = '<div class="card"><div class="empty">还没菜谱。往 Food/recipes.md 里加，然后跑 <code>node tools/build-recipes.mjs</code>。</div></div>';
       return;
     }
-    const sec = shopSections[Math.min(curWeek, shopSections.length-1)];
-    const real = sec.items.filter(it=>!it.note);
-    const done = real.filter(it=>checks[sec.title+'||'+it.text]).length;
-    const dishes = sec.title.split(/[：:]/)[1] || '';
-    let html = `<div class="shop-head"><span class="shop-title">🛒 ${esc(sec.title.split(/[：:]/)[0])}</span>` +
-      `<span class="shop-progress" id="shop-progress">已买 ${done}/${real.length}</span></div>`;
-    if(dishes) html += `<div class="shop-dishes">本周菜：${esc(dishes)}</div>`;
-    sec.items.forEach(it=>{
-      if(it.note){
-        html += `<div class="shop-note"><span>💡</span><span>${esc(it.text)}</span></div>`;
-      } else {
-        const key = sec.title+'||'+it.text;
-        const on = !!checks[key];
-        html += `<div class="shop-item${on?' checked':''}" data-key="${esc(key)}">` +
-          `<span class="box">${on?'✓':''}</span><span class="label">${esc(it.text)}</span></div>`;
-      }
-    });
-    html += `<div class="shop-actions">` +
-      `<button class="btn-sub" id="btn-clear-week">清空本周勾选</button>` +
-      `<button class="btn-sub primary" id="btn-goto-guide">看本周做法 →</button></div>`;
-    card.innerHTML = html;
-    card.querySelectorAll('.shop-item').forEach(el=>{
-      el.addEventListener('click', ()=>{
-        const k = el.dataset.key;
-        checks[k] = !checks[k];
-        if(!checks[k]) delete checks[k];
-        store.set('cook.checks', checks);
-        renderShop();
+    list.innerHTML = dishes.map(dishCard).join('');
+    $('#btn-expand').textContent = allOpen ? '全部收起' : '全部展开';
+    list.querySelectorAll('.shot').forEach(el => {
+      el.addEventListener('click', () => {
+        const d = dishes[+el.dataset.dish];
+        openLightbox(d.images, +el.dataset.i, d.title);
       });
     });
-    $('#btn-clear-week').addEventListener('click', ()=>{
-      sec.items.forEach(it=>delete checks[sec.title+'||'+it.text]);
-      store.set('cook.checks', checks);
-      renderShop();
-    });
-    $('#btn-goto-guide').addEventListener('click', ()=>{
-      showPage('guide');
-      const h = [...document.querySelectorAll('#guide-doc h2')]
-        .find(h=>h.textContent.trim() === sec.title);
-      if(h) setTimeout(()=>h.scrollIntoView({behavior:'smooth', block:'start'}), 60);
-    });
+    applyFilter();
   }
 
-  /* ── 成果记录（GitHub Issues）── */
-  function slimIssue(it){
-    return { title: it.title, body: it.body || '', created_at: it.created_at, html_url: it.html_url };
+  function applyFilter(){
+    const q = ($('#q').value || '').trim().toLowerCase();
+    const cards = [...document.querySelectorAll('#dish-list .dish')];
+    let shown = 0;
+    cards.forEach(c => {
+      const d = dishes[+c.dataset.idx];
+      const hay = (d.title + ' ' + d.sections.map(s => s.title + ' ' + s.md).join(' ')).toLowerCase();
+      const hit = !q || hay.includes(q);
+      c.style.display = hit ? '' : 'none';
+      if(hit) shown++;
+    });
+    $('#count-line').textContent = q
+      ? `找到 ${shown} / ${dishes.length} 道菜`
+      : `${dishes.length} 道菜 · ${totalImages} 张成果图`;
   }
-  function recordCard(it){
-    const d = new Date(it.created_at);
-    const ds = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
-    return `<div class="card"><div class="record-meta">${ds}</div>` +
-      `<div class="record-title">${esc(it.title)}</div>` +
-      `<div class="record-body md">${mdToHtml(it.body)}</div>` +
-      `<a class="record-link" href="${esc(it.html_url)}" target="_blank" rel="noopener">在 GitHub 打开 ↗</a></div>`;
-  }
-  const HOWTO = `<div class="card"><b>怎么记录成果？（一次设置，永久好用）</b>` +
-    `<ol class="howto"><li>手机装免费的 <b>GitHub App</b>（应用商店搜 GitHub）并登录；</li>` +
-    `<li>做完饭点上面的橙色按钮（或在 App 里打开本仓库 → Issues → New issue）；</li>` +
-    `<li>标题写日期和菜名，正文<b>点图片按钮直接拍照</b>，提交。</li></ol>` +
-    `<div class="empty">提交后这一页会自动变成你的成果相册 📒</div></div>`;
-  let recordsLoaded = false;
-  async function loadRecords(force){
-    if(recordsLoaded && !force) return;
-    const list = $('#records-list');
-    list.innerHTML = '<div class="loading">加载记录中…</div>';
-    try{
-      const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=all&sort=created&direction=desc&per_page=30`,
-        { headers: { 'Accept': 'application/vnd.github+json' } });
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      const items = (await r.json()).filter(it=>!it.pull_request).map(slimIssue);
-      store.set('cook.records', { t: Date.now(), items });
-      recordsLoaded = true;
-      list.innerHTML = items.length ? items.map(recordCard).join('') : HOWTO;
-    }catch(e){
-      const cached = store.get('cook.records', null);
-      if(cached && cached.items.length){
-        list.innerHTML = `<div class="tip">📡 暂时连不上 GitHub，显示的是上次的记录。</div>` +
-          cached.items.map(recordCard).join('');
-      } else {
-        list.innerHTML = `<div class="card"><div class="empty">暂时读不到记录（可能没网，或仓库还没设为公开）。</div></div>` + HOWTO;
-      }
-    }
-  }
-  (function(){
-    const d = new Date();
-    const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const body = '**今天做了**：\n\n**哪步出了问题 / 下次改进**：\n\n（点输入框上方的图片按钮，把成品照片拍照贴进来 📷）';
-    $('#btn-new-record').href =
-      `https://github.com/${REPO}/issues/new?title=${encodeURIComponent(ds+' ')}&body=${encodeURIComponent(body)}`;
-  })();
+  $('#q').addEventListener('input', applyFilter);
 
-  /* ── 加载文档 ── */
-  async function loadDocs(){
+  if(mqDesktop){
+    const onBreakpoint = () => {
+      allOpen = mqDesktop.matches;
+      if(dishes.length) renderDishes();
+    };
+    if(mqDesktop.addEventListener) mqDesktop.addEventListener('change', onBreakpoint);
+    else if(mqDesktop.addListener) mqDesktop.addListener(onBreakpoint);
+  }
+
+  let allOpen = isDesktop();      // 电脑上默认全部展开
+  $('#btn-expand').addEventListener('click', () => {
+    allOpen = !allOpen;
+    document.querySelectorAll('#dish-list details').forEach(d => { d.open = allOpen; });
+    $('#btn-expand').textContent = allOpen ? '全部收起' : '全部展开';
+  });
+
+  async function loadRecipes(force){
+    if(recipesLoaded && !force) return;
+    const list = $('#dish-list');
+    list.innerHTML = '<div class="loading">菜谱加载中…</div>';
     try{
-      const r = await fetch('Food/practice_guide.md');
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      const md = await r.text();
-      $('#guide-doc').innerHTML = mdToHtml(md);
-      shopSections = extractShopping(md);
-      if(curWeek >= shopSections.length) curWeek = 0;
-      renderPills();
-      renderShop();
+      const r = await fetch('data/recipes.json', { cache: 'no-cache' });
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      dishes = Array.isArray(d) ? d : (d.dishes || []);
+      imageUsage = Array.isArray(d) ? {} : (d.imageUsage || {});
+      totalImages = Array.isArray(d) ? 0 : (d.imageCount || 0);
+      recipesLoaded = true;
+      renderDishes();
     }catch(e){
-      $('#guide-doc').innerHTML = '<div class="empty">教程加载失败，请检查网络后点右上角 ↻ 重试。</div>';
-      $('#shop-card').innerHTML = '<div class="empty">清单加载失败，请检查网络后点右上角 ↻ 重试。</div>';
+      dishes = [];
+      list.innerHTML = '<div class="card"><div class="empty">菜谱加载失败，点右上角 ↻ 重试。</div></div>';
+      $('#count-line').textContent = '';
     }
+  }
+
+  /* ── 食材页 ── */
+  let ingLoaded = false;
+  async function loadIngredients(force){
+    if(ingLoaded && !force) return;
+    const box = $('#ing-doc');
+    box.innerHTML = '<div class="loading">加载中…</div>';
     try{
-      const r = await fetch('Food/favorite.md');
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      $('#fav-doc').innerHTML = mdToHtml(await r.text());
+      const r = await fetch('Food/ingredients.md', { cache: 'no-cache' });
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      box.innerHTML = mdToHtml(await r.text());
+      ingLoaded = true;
     }catch(e){
-      $('#fav-doc').innerHTML = '<div class="empty">加载失败，请检查网络后点右上角 ↻ 重试。</div>';
+      box.innerHTML = '<div class="empty">加载失败，点右上角 ↻ 重试。</div>';
     }
   }
 
   /* ── 刷新 & 离线 ── */
   $('#btn-refresh').addEventListener('click', async ()=>{
-    if(window.caches){
-      for(const k of await caches.keys()) await caches.delete(k);
-    }
+    if(window.caches){ for(const k of await caches.keys()) await caches.delete(k); }
     location.reload();
   });
   if('serviceWorker' in navigator){
@@ -452,7 +467,6 @@ if (typeof document !== 'undefined') (function(){
   }
 
   showPage(currentPage);
-  loadDocs();
 })();
 </script>
 </body>

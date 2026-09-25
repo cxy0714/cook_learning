@@ -1,7 +1,7 @@
 {
-  "name": "做饭练习",
-  "short_name": "做饭",
-  "description": "买菜清单 + 炒菜教程 + 成果记录",
+  "name": "我的菜谱",
+  "short_name": "菜谱",
+  "description": "练过的菜：标准做法 + 我的做法 + 成果图",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

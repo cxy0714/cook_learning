@@ -22,6 +22,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: 生成菜谱数据 data/recipes.json
+        run: node tools/build-recipes.mjs
       - uses: actions/configure-pages@v5
         with:
           enablement: true
