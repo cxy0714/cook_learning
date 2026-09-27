@@ -1,8 +1,80 @@
 {
-  "generatedAt": "2026-09-26T10:32:30.199Z",
-  "total": 27,
-  "imageCount": 17,
+  "generatedAt": "2026-09-27T15:28:17.598Z",
+  "total": 30,
+  "imageCount": 20,
   "dishes": [
+    {
+      "title": "白灼虾",
+      "images": [
+        {
+          "src": "data/week5day3/01.jpg",
+          "alt": ""
+        }
+      ],
+      "sections": [
+        {
+          "title": "标准做法",
+          "md": "**食材**：带壳虾 200g、虾仁 150g\n**煮虾**：水里加盐、胡椒、蒜末、料酒（有姜更好）\n1. 水烧开，**先下带壳虾**，煮到变红捞出。\n2. 再煮虾仁。\n3. 配料汁蘸着吃。"
+        },
+        {
+          "title": "我的做法",
+          "md": "- week5day3：盐、胡椒、蒜末、料酒煮还不错。\n- 没有姜，下次买姜。\n- 料汁不太好吃：醋、盐、生抽、韭菜、蒜末。\n- 带壳虾更入味一些，也可能是他先煮，煮完捞出来带走了太多料了，然后又煮的虾仁。"
+        }
+      ],
+      "category": "🦐 虾 · 海鲜",
+      "lastPractice": "week5day3",
+      "id": "白灼虾",
+      "imageCount": 1,
+      "cover": "data/week5day3/01.jpg"
+    },
+    {
+      "title": "牡蛎煎",
+      "images": [
+        {
+          "src": "data/week5day3/02.jpg",
+          "alt": ""
+        }
+      ],
+      "sections": [
+        {
+          "title": "标准做法",
+          "md": "**食材**：牡蛎 200g、鸡蛋 3 个、韭菜 150g\n1. 牡蛎**把水分沥干**（水多就煎不成形）。\n2. 加鸡蛋、切碎的韭菜拌匀。\n3. 热锅下油，倒入摊平，小火煎到两面定型金黄。"
+        },
+        {
+          "title": "我的做法",
+          "md": "- week5day3：很失败，水太多了。\n- 下次需要几乎无水，红薯淀粉或者地瓜淀粉，还是用蒜苗之类的吧，相比牡蛎不要太多。"
+        }
+      ],
+      "category": "🦐 虾 · 海鲜",
+      "lastPractice": "week5day3",
+      "id": "牡蛎煎",
+      "imageCount": 1,
+      "cover": "data/week5day3/02.jpg"
+    },
+    {
+      "title": "素三丝",
+      "images": [
+        {
+          "src": "data/week5day3/03.jpg",
+          "alt": ""
+        }
+      ],
+      "sections": [
+        {
+          "title": "标准做法",
+          "md": "**食材**：胡萝卜丝 150g（大半根）、青椒丝 150g（两个）、土豆丝 100g（一个）\n1. 土豆丝**泡水冲掉淀粉**后沥干。\n2. 热锅凉油，先下胡萝卜丝炒软。\n3. 下土豆丝、青椒丝，**全程大火快炒**。\n4. 加盐 + 一点醋，断生就出锅。"
+        },
+        {
+          "title": "我的做法",
+          "md": "- week5day3：切的丝还是太粗了，可能翻勺太多导致火力不足，半生不熟，但是还是有糊的。"
+        }
+      ],
+      "category": "🥬 素菜",
+      "lastPractice": "week5day3",
+      "id": "素三丝",
+      "imageCount": 1,
+      "cover": "data/week5day3/03.jpg"
+    },
     {
       "title": "宫保鸡丁",
       "images": [
@@ -660,6 +732,15 @@
     }
   ],
   "imageUsage": {
+    "data/week5day3/01.jpg": [
+      "白灼虾"
+    ],
+    "data/week5day3/02.jpg": [
+      "牡蛎煎"
+    ],
+    "data/week5day3/03.jpg": [
+      "素三丝"
+    ],
     "data/week5day2/01.jpg": [
       "宫保鸡丁"
     ],
