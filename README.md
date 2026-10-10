@@ -1,112 +1,81 @@
 # 🍳 我的菜谱
 
-自己做饭的菜谱本：每道菜记**标准做法**（该怎么炒）、**我的做法**（我实际怎么炒的、踩了什么坑）、
-**成果图**（做完拍的照片）。配一个手机网页（PWA），加到主屏幕就像 APP 一样用。
+老婆的专属菜谱本：在线记录每道菜的**标准做法**、**我的做法**、**食材**和**成果图**。
+移动端优先，支持 Vercel 一键部署，数据存 Postgres。
 
-## 📱 两个页面
+## ✨ 功能
 
-- **🍳 菜谱**：所有练过的菜。能搜菜名/食材/做法，点开看标准做法 + 我的做法 + 成果图，图能点开看大图
-- **🧺 食材**：练过的食材，菜、肉、调料清单
+- **🍳 菜谱页**：浏览所有菜品，搜索菜名/食材/做法，按分类筛选，图片点开看大图
+- **🧺 食材页**：按分类展示所有食材
+- **✏️ 管理页**：在线新增/编辑/删除菜品，支持食材选择、图片上传、Markdown 做法
 
+## 🛠 技术栈
 
+- [Next.js 15](https://nextjs.org/) (App Router, TypeScript)
+- [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) — 菜谱/食材数据
+- [Vercel Blob](https://vercel.com/docs/storage/vercel-blob) — 图片存储
+- [Tailwind CSS v4](https://tailwindcss.com/) — 样式
 
-## ✏️ 怎么加一道菜
+## 🚀 部署到 Vercel
 
-改 `Food/recipes.md`，然后跑一次 `node tools/build-recipes.mjs`（忘了跑也没事，推上去 Actions 会自动跑）。
+### 1. 创建 Vercel 项目
 
-格式很简单 —— **每道菜一个 `# 菜名`**，下面写小节：
+在 [Vercel](https://vercel.com) 导入本 GitHub 仓库，框架自动识别为 Next.js。
 
-````markdown
-# 彩椒番茄炒牛肉
+### 2. 创建存储
 
-## 标准做法
-**食材**：牛肉丝 150g、彩椒 180g、番茄 1 颗
-1. 牛肉丝腌 10 分钟
-2. 热锅凉油下牛肉，变色盛出
-3. 下番茄炒出汁，再下彩椒
-4. 倒回牛肉，老抽 + 蚝油收汁
+在 Vercel 控制台：
 
-## 我的做法
-- 番茄下锅时锅太干，糊了很多
-- 料汁有点多，下次减量
+1. **Storage → Create → Postgres** — 创建数据库，自动注入 `POSTGRES_URL` 等环境变量
+2. **Storage → Create → Blob** — 创建 Blob 存储，自动注入 `BLOB_READ_WRITE_TOKEN`
 
-## 图片
-![](../data/week4/01.jpg)
-````
+### 3. 设置管理密码
 
-菜名下面还可以写两行元数据（**可省略**），页面靠它们排序和分类：
-
-```markdown
-# 彩椒番茄炒牛肉
-
-**分类**：🥩 肉类
-**最近练**：week4
-```
-
-- **最近练**：页面按它**倒序排**（最新的菜在最前面）。写 `week4`、`week5day1` 都认
-- **分类**：顶部会按分类生成筛选按钮；不写就不参与分类
-
-小节名随便起，页面照原样显示。**「我的做法」这个小节会自动变成绿色高亮**，
-所以给自己记心得就固定用这个名字。
-
-### 关于图片
-
-图片路径相对 `Food/recipes.md` 写，比如 `![](../data/week4/01.jpg)`，也可以直接引用网上图片（`https://...`）。
-图片别放太大，长边 1600px 以内手机上看着就够了。
-
-**懒得写路径也可以用简写** —— 在菜名下面任意位置单独写一行「帖子名 + 第几张」就行，
-放在 `我的做法` 的列表里也可以，脚本会自动认出来并挪走：
-
-```markdown
-# 烩菜
-
-week3 01          ← 等价于 ![](../data/week3/01.jpg)
-
-## 标准做法
-……
-```
-
-`week1 05`、`week5day1 02`、`week5day 01` 这几种写法都认。认不出会打印一行 ⚠ 提示，不会静默丢掉。
-
-**一张图可以被多道菜复用** —— 同一次做的菜常常拍到一张里，直接在两道菜下面都写同一个路径就行，
-文件只存一份，页面会自动认出来：
-
-````markdown
-# 彩椒番茄炒牛肉
-
-## 图片
-![同一天的成品，右边那盘](../data/week4/01.jpg)
-
-# 虾仁烧豆腐
-
-## 图片
-![一锅里一起出来的，左半边是豆腐](../data/week4/01.jpg)
-````
-
-效果：
-
-- 复用的图片缩略图右上角会有个 🔁 角标
-- 点开大图会显示「🔁 也用于：虾仁烧豆腐、蒜蓉西兰花」
-- 每道菜可以给同一张图写**不同的说明文字**（方括号里那段），点开大图时显示，方便说清「这张里的哪部分」
-- 顶部的「N 张成果图」按**不重复**的图片张数算
-
-> 正因为会复用，图片就别按菜名归档了 —— 保持 `data/week1…week5day1/` 按**原帖**存放更合适，
-> 归属关系全部写在 `Food/recipes.md` 里。
-
-## ✏️ 怎么改食材
-
-直接编辑 `Food/ingredients.md`，纯 markdown，改完刷新页面就是新的（不用跑脚本）。
-
-## 📂 目录说明
+在 Vercel 项目 **Settings → Environment Variables** 添加：
 
 ```
-index.html              手机页面（菜谱 + 食材）
-Food/
-  recipes.md            ← 菜谱源文件，改这个
-  ingredients.md        ← 食材清单，改这个
-data/
-  week1…week5day1/      ← 从小红书搬来的原帖：caption.md 是正文，01.jpg… 是配图
-  recipes.json          ← 脚本生成的，别手改
-tools/
-  build-recipes.mjs     把 Food/recipes.md 解析成 data/recipes.json
+ADMIN_PASSWORD=你的密码
 ```
+
+### 4. 部署 + 迁移
+
+1. 点 Deploy，等部署完成
+2. 本地配置 `.env.local`（从 Vercel 控制台复制 Postgres 和 Blob 的环境变量）
+3. 运行迁移脚本建表 + 导入 3 道示例菜谱：
+
+```bash
+npm install
+npx tsx scripts/migrate.ts
+```
+
+4. 访问 `/admin` 输入密码，开始管理菜谱
+
+## 💻 本地开发
+
+```bash
+npm install
+cp .env.example .env.local  # 填入 Vercel Postgres 和 Blob 的连接信息
+npm run dev
+```
+
+打开 [localhost:3000](http://localhost:3000)。
+
+## 📂 目录结构
+
+```
+app/                    Next.js App Router
+  page.tsx              菜谱列表（公开）
+  ingredients/          食材页（公开）
+  admin/                管理界面（需密码）
+  api/                  API 路由（recipes/ingredients/upload/auth）
+components/             React 组件
+lib/                   数据库、认证、Markdown 工具
+scripts/migrate.ts     建表 + 导入示例数据
+public/                静态资源（图标、示例图片）
+Food/                  旧 markdown 源文件（迁移用，可删）
+data/                  旧图片（迁移用，可删）
+```
+
+## 📝 关于 Markdown
+
+标准做法和我的做法支持 Markdown 格式：`**粗体**`、`1. 有序列表`、`- 无序列表`、`> 引用` 等。

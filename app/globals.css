@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* ── 主题色：暖色菜谱本 ── */
+:root {
+  --bg: #faf6f1;
+  --card: #ffffff;
+  --ink: #2b2620;
+  --muted: #8d8278;
+  --accent: #e0532f;
+  --accent-soft: #fdeae3;
+  --line: #ece2d6;
+  --good: #3a9d5d;
+  --mine-bg: #f2f7f0;
+  --mine-line: #cfe3c6;
+  --shadow: 0 1px 4px rgba(60, 40, 20, 0.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1916;
+    --card: #272220;
+    --ink: #f0e9e1;
+    --muted: #9a8f84;
+    --accent: #ff7a52;
+    --accent-soft: #3a2620;
+    --line: #3a342e;
+    --good: #5cbb7e;
+    --mine-bg: #232b22;
+    --mine-line: #3a4a36;
+    --shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 17px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans CJK SC",
+    "Microsoft YaHei", sans-serif;
+  line-height: 1.65;
+}
+
+/* ── markdown 渲染区 ── */
+.md h1 { font-size: 1.3rem; line-height: 1.4; margin: 0.4em 0 0.6em; }
+.md h2 { font-size: 1.12rem; margin: 1.4em 0 0.5em; padding-left: 10px; border-left: 4px solid var(--accent); line-height: 1.45; }
+.md h3 { font-size: 1.02rem; margin: 1.2em 0 0.4em; color: var(--accent); }
+.md p { margin: 0.5em 0; }
+.md ol, .md ul { padding-left: 1.3em; margin: 0.5em 0; }
+.md li { margin: 0.35em 0; }
+.md blockquote { margin: 0.8em 0; padding: 10px 14px; background: var(--accent-soft); border-radius: 12px; font-size: 0.93rem; }
+.md blockquote p { margin: 0.3em 0; }
+.md hr { border: none; border-top: 1px dashed var(--line); margin: 1.4em 0; }
+.md img { max-width: 100%; border-radius: 12px; display: block; margin: 8px 0; }
+.md a { color: var(--accent); }
+.md strong { color: var(--ink); }
+.md code { background: var(--accent-soft); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+
+/* ── 滚动条隐藏（分类 chips 横滚） ── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* ── 展开卡片 ── */
+.recipe-card summary::-webkit-details-marker { display: none; }
+.recipe-card summary::after { content: "▾"; color: var(--muted); font-size: 0.85rem; margin-left: auto; }
+.recipe-card details[open] > summary::after { content: "▴"; }
+.recipe-card details[open] > summary { border-bottom: 1px solid var(--line); }
+
+/* ── 桌面端：双列网格 + 宽容器 ── */
+@media (min-width: 900px) {
+  main {
+    max-width: 1180px !important;
+    padding: 20px 24px 40px !important;
+  }
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+  .recipe-grid > article {
+    margin-bottom: 0 !important;
+  }
+}
+@media (min-width: 1500px) {
+  .recipe-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
