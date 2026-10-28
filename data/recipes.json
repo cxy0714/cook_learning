@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-27T15:28:17.598Z",
-  "total": 30,
-  "imageCount": 20,
+  "generatedAt": "2026-10-28T04:23:34.372Z",
+  "total": 31,
+  "imageCount": 21,
   "dishes": [
     {
       "title": "白灼虾",
@@ -729,6 +729,30 @@
       "id": "西兰花炒虾仁",
       "imageCount": 1,
       "cover": "data/week1/03.jpg"
+    },
+    {
+      "title": "桂花咖啡",
+      "images": [
+        {
+          "src": "data/osmanthus-coffee.jpg",
+          "alt": "桂花蜜、咖啡液和牛奶的制作准备"
+        }
+      ],
+      "sections": [
+        {
+          "title": "标准做法",
+          "md": "**食材**：咖啡粉约 15g、热水约 200ml、桂花蜜 1 勺半（按口味调整）；室温牛奶可选\n1. 用约 15g 咖啡粉和 200ml 热水冲出咖啡液。\n2. 杯中先放桂花蜜，倒入 **40–60ml 温热咖啡液**，搅拌至桂花蜜融化。\n3. 补入剩余咖啡液，调到自己喜欢的浓度。喜欢奶味的话，直接加室温牛奶即可。"
+        },
+        {
+          "title": "我的做法",
+          "md": "- 不加奶也很好喝；加奶时用室温牛奶，不必加热或打泡。"
+        }
+      ],
+      "category": "☕ 饮品",
+      "id": "桂花咖啡",
+      "lastPractice": "",
+      "imageCount": 1,
+      "cover": "data/osmanthus-coffee.jpg"
     }
   ],
   "imageUsage": {
@@ -803,6 +827,9 @@
     ],
     "data/week1/03.jpg": [
       "西兰花炒虾仁"
+    ],
+    "data/osmanthus-coffee.jpg": [
+      "桂花咖啡"
     ]
   }
 }
